@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Hosted agent definition (factory)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "businessUnit",
+    "authPattern",
+    "foundryProject",
+    "source",
+    "owners"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$",
+      "description": "Agent name; also the APIM route /agents/{name}"
+    },
+    "businessUnit": {
+      "type": "string",
+      "pattern": "^bu-[a-z0-9-]+$"
+    },
+    "authPattern": {
+      "enum": [
+        "obo",
+        "service-principal"
+      ]
+    },
+    "foundryProject": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string",
+      "description": "Repo-relative folder with Dockerfile"
+    },
+    "cpu": {
+      "enum": [
+        "0.5",
+        "1",
+        "2"
+      ],
+      "default": "0.5"
+    },
+    "memory": {
+      "enum": [
+        "1Gi",
+        "2Gi",
+        "4Gi"
+      ],
+      "default": "1Gi"
+    },
+    "env": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "propertyNames": {
+        "not": {
+          "pattern": "^(FOUNDRY_|AGENT_)"
+        }
+      },
+      "description": "Container env vars. FOUNDRY_* and AGENT_* are reserved by the platform."
+    },
+    "toolScopes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "owners": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "format": "email"
+      }
+    }
+  }
+}

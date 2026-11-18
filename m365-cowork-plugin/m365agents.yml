@@ -1,0 +1,48 @@
+# M365 Agents Toolkit project: Copilot Cowork plugin for the hosted agents MCP server.
+# Run: atk provision --env dev --interactive false   (no secrets needed)
+version: v1.13
+
+provision:
+  - uses: teamsApp/create
+    with:
+      name: hosted-agents-cowork
+    writeToEnvironmentFile:
+      teamsAppId: TEAMS_APP_ID
+
+  # Entra SSO: the Microsoft token store gets the user's token for the blueprint directly. No client app, no secret.
+  # The blueprint must also carry the generated Application ID URI, the oAuthConsentRedirect web redirect, and
+  # pre-authorize the token store (ab3be6b7-f5df-413d-ac2d-abf1e3fd9c0b) for agent.invoke.
+  # The earlier secret-based registration (OAUTH_CONFIGURATION_ID, COWORK_CLIENT_ID) is no longer provisioned here.
+  - uses: oauth/register
+    with:
+      name: hosted-agents-mcp-sso
+      appId: ${{TEAMS_APP_ID}}
+      flow: authorizationCode
+      identityProvider: MicrosoftEntra
+      baseUrl: ${{MCP_SERVER_URL}}
+      clientId: ${{BLUEPRINT_CLIENT_ID}}
+      scope: ${{SSO_SCOPE}}
+    writeToEnvironmentFile:
+      configurationId: SSO_CONFIGURATION_ID
+      applicationIdUri: SSO_APPLICATION_ID_URI
+
+  - uses: teamsApp/zipAppPackage
+    with:
+      manifestPath: ./appPackage/manifest.json
+      outputZipPath: ./appPackage/build/appPackage.${{TEAMSFX_ENV}}.zip
+      outputFolder: ./appPackage/build
+
+  - uses: teamsApp/validateAppPackage
+    with:
+      appPackagePath: ./appPackage/build/appPackage.${{TEAMSFX_ENV}}.zip
+
+  - uses: teamsApp/update
+    with:
+      appPackagePath: ./appPackage/build/appPackage.${{TEAMSFX_ENV}}.zip
+
+  - uses: teamsApp/extendToM365
+    with:
+      appPackagePath: ./appPackage/build/appPackage.${{TEAMSFX_ENV}}.zip
+    writeToEnvironmentFile:
+      titleId: M365_TITLE_ID
+      appId: M365_APP_ID

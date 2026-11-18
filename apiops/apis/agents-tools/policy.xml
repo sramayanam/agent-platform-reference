@@ -1,0 +1,48 @@
+<!--
+  agents-tools: tool-shaped facade over hosted agents, exposed to MCP clients (Copilot Cowork) via agents-mcp.
+  POST /agents-tools/ask {"agent": "...", "input": "..."} -> {project}/agents/{agent}/endpoint/protocols/openai/responses
+  Same trust model as /agents: blueprint-audience user token, forwarded as x-client-user-assertion; OBO via agent-obo; APIM MI to Foundry.
+-->
+<policies>
+  <inbound>
+    <base />
+    <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized" output-token-variable-name="caller">
+      <openid-config url="https://login.microsoftonline.com/{{tenant-id}}/v2.0/.well-known/openid-configuration" />
+      <audiences>
+        <audience>{{blueprint-client-id}}</audience>
+        <audience>api://{{blueprint-client-id}}</audience>
+        <audience>{{mcp-resource}}</audience>
+      </audiences>
+      <issuers>
+        <issuer>https://sts.windows.net/{{tenant-id}}/</issuer>
+        <issuer>https://login.microsoftonline.com/{{tenant-id}}/v2.0</issuer>
+      </issuers>
+    </validate-jwt>
+    <set-variable name="body" value="@(context.Request.Body.As<JObject>(preserveContent: false))" />
+    <set-variable name="agent" value="@((string)((JObject)context.Variables["body"])["agent"] ?? "graph-profile-agent")" />
+    <choose>
+      <when condition="@(!System.Text.RegularExpressions.Regex.IsMatch((string)context.Variables["agent"], "^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$"))">
+        <return-response><set-status code="400" reason="Bad Request" /><set-body>invalid agent name</set-body></return-response>
+      </when>
+    </choose>
+    <set-header name="x-client-user-assertion" exists-action="override">
+      <value>@(context.Request.Headers.GetValueOrDefault("Authorization", "").Replace("Bearer ", ""))</value>
+    </set-header>
+    <set-variable name="agentName" value="@((string)context.Variables[&quot;agent&quot;])" />
+    <include-fragment fragment-id="agent-obo" />
+    <set-header name="Authorization" exists-action="delete" />
+    <authentication-managed-identity resource="https://ai.azure.com" />
+    <set-header name="Content-Type" exists-action="override"><value>application/json</value></set-header>
+    <set-body>@(new JObject(new JProperty("input", (string)((JObject)context.Variables["body"])["input"] ?? ""), new JProperty("stream", false)).ToString())</set-body>
+    <rewrite-uri template="@("/agents/" + (string)context.Variables["agent"] + "/endpoint/protocols/openai/responses?api-version=v1")" copy-unmatched-params="false" />
+    <set-header name="x-agent-route" exists-action="override"><value>@((string)context.Variables["agent"])</value></set-header>
+    <emit-metric name="agent-requests" namespace="agents-platform" value="1">
+      <dimension name="agent" value="@((string)context.Variables["agent"])" />
+      <dimension name="callerOid" value="@(((Jwt)context.Variables["caller"]).Claims.GetValueOrDefault("oid", "unknown"))" />
+      <dimension name="authPattern" value="mcp-obo" />
+    </emit-metric>
+  </inbound>
+  <backend><base /></backend>
+  <outbound><base /></outbound>
+  <on-error><base /></on-error>
+</policies>

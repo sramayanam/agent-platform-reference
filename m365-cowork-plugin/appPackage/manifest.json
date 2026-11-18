@@ -1,0 +1,52 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.28/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.28",
+  "version": "1.0.2",
+  "id": "${{TEAMS_APP_ID}}",
+  "developer": {
+    "name": "<your organization>",
+    "websiteUrl": "https://${{FRONT_DOOR_HOST}}",
+    "privacyUrl": "https://${{FRONT_DOOR_HOST}}",
+    "termsOfUseUrl": "https://${{FRONT_DOOR_HOST}}"
+  },
+  "name": {
+    "short": "Hosted agents",
+    "full": "Hosted agents platform"
+  },
+  "description": {
+    "short": "Ask the organization's hosted agents, as you.",
+    "full": "Connects Copilot Cowork to the organization's Foundry hosted agents through the platform MCP gateway. Calls run with your own identity; graph-profile-agent reads your Microsoft Graph profile, manager and calendar."
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "accentColor": "#3A5BA0",
+  "agentSkills": [
+    {
+      "folder": "skills/hosted-agents"
+    }
+  ],
+  "agentConnectors": [
+    {
+      "id": "agents-platform",
+      "displayName": "Hosted agents platform",
+      "description": "Send a message to a hosted agent (default graph-profile-agent) and return its reply. Use for questions about the signed-in user's profile, manager or calendar, or when the user names an agent.",
+      "toolSource": {
+        "remoteMcpServer": {
+          "mcpServerUrl": "${{MCP_SERVER_URL}}",
+          "authorization": {
+            "type": "OAuthPluginVault",
+            "referenceId": "${{SSO_CONFIGURATION_ID}}"
+          },
+          "mcpToolDescription": {
+            "file": "tools/hosted-agents-tools.json"
+          }
+        }
+      }
+    }
+  ],
+  "validDomains": [
+    "${{FRONT_DOOR_HOST}}"
+  ]
+}

@@ -1,0 +1,172 @@
+<mxfile host="Electron">
+  <diagram id="teams-direct-reference" name="Teams direct - secured reference">
+    <mxGraphModel dx="1573" dy="788" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1740" background="#F6F7FC" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="header" parent="1" style="rounded=1;arcSize=12;fillColor=#25284F;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="180" width="1140" x="30" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="eyebrow" parent="1" style="text;html=0;align=left;fontSize=17;fontStyle=1;fontColor=#A4DFD4;" value="SECURED REFERENCE ARCHITECTURE" vertex="1">
+          <mxGeometry height="30" width="1000" x="60" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="title" parent="1" style="text;html=0;align=left;fontSize=48;fontStyle=1;fontColor=#FFFFFF;" value="AGENTS THAT ACT FOR YOU." vertex="1">
+          <mxGeometry height="65" width="1070" x="60" y="85" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" parent="1" style="text;html=0;align=left;fontSize=23;fontColor=#D1D5EB;" value="Your identity. Your permissions. Across every channel." vertex="1">
+          <mxGeometry height="35" width="1040" x="60" y="155" as="geometry" />
+        </mxCell>
+        <mxCell id="public-zone" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=0;verticalAlign=top;align=left;spacingTop=10;spacingLeft=15;fillColor=#FFFFFF;strokeColor=#DADEE8;dashed=1;fontColor=#536176;fontSize=15;fontStyle=1;" value="MICROSOFT CLOUD SERVICES (PUBLIC, OUTSIDE YOUR VNETS)" vertex="1">
+          <mxGeometry height="295" width="1140" x="30" y="225" as="geometry" />
+        </mxCell>
+        <mxCell id="teams" parent="1" style="rounded=1;arcSize=18;whiteSpace=wrap;html=0;fillColor=#EAF1FF;strokeColor=#CFDDF2;fontColor=#1C293D;fontStyle=1;fontSize=23;" value="Teams" vertex="1">
+          <mxGeometry height="70" width="210" x="50" y="265" as="geometry" />
+        </mxCell>
+        <mxCell id="cowork" parent="1" style="rounded=1;arcSize=18;whiteSpace=wrap;html=0;fillColor=#E7F5F2;strokeColor=#C6E5DD;fontColor=#1C293D;fontStyle=1;fontSize=20;" value="Microsoft 365 Copilot Cowork" vertex="1">
+          <mxGeometry height="70" width="210" x="290" y="265" as="geometry" />
+        </mxCell>
+        <mxCell id="mcp" parent="1" style="rounded=1;arcSize=18;whiteSpace=wrap;html=0;fillColor=#FFF5E1;strokeColor=#F0DDB2;fontColor=#1C293D;fontStyle=1;fontSize=23;" value="MCP clients" vertex="1">
+          <mxGeometry height="70" width="210" x="530" y="265" as="geometry" />
+        </mxCell>
+        <mxCell id="entra" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#F0EBFF;strokeColor=#CFC3F1;fontColor=#1C293D;fontSize=15;" value="&lt;b style=&#39;font-size:19px&#39;&gt;Microsoft Entra ID&lt;/b&gt;&lt;br&gt;Sign-in, token exchange, Agent ID" vertex="1">
+          <mxGeometry height="70" width="340" x="800" y="265" as="geometry" />
+        </mxCell>
+        <mxCell id="bot-service" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#EAF1FF;strokeColor=#BDD1EC;fontColor=#1C293D;fontSize=13;" value="&lt;b style=&#39;font-size:17px&#39;&gt;Azure Bot Service&lt;/b&gt;&lt;br&gt;Teams channel, Microsoft-hosted&lt;br&gt;Cannot be placed in a VNet&lt;br&gt;&lt;b&gt;Public network access: On&lt;/b&gt;&lt;br&gt;Messaging endpoint =&lt;br&gt;https://&amp;lt;front-door&amp;gt;/api/messages" vertex="1">
+          <mxGeometry height="130" width="210" x="50" y="375" as="geometry" />
+        </mxCell>
+        <mxCell id="front-door" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#E0F4EF;strokeColor=#A3D7CD;fontColor=#147267;fontSize=14;" value="&lt;b style=&#39;font-size:21px&#39;&gt;Azure Front Door Premium + WAF&lt;/b&gt;&lt;br&gt;Single public entry for every channel&lt;br&gt;/api/messages (Teams), /agents, /agents-mcp,&lt;br&gt;/agents-tools, /.well-known. Origin: APIM gateway.&lt;br&gt;Own WAF policy for /api/messages." vertex="1">
+          <mxGeometry height="130" width="450" x="290" y="375" as="geometry" />
+        </mxCell>
+        <mxCell id="platform" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacing=0;fontSize=15;fontColor=#536176;" value="&lt;b style=&#39;font-size:18px;color:#1C293D&#39;&gt;One agent platform, every channel.&lt;/b&gt;&lt;br&gt;One Teams bot and one MCP server for all agents.&lt;br&gt;Agents published from YAML.&lt;br&gt;One gateway policy for identity." vertex="1">
+          <mxGeometry height="130" width="300" x="800" y="375" as="geometry" />
+        </mxCell>
+        <mxCell id="private-network" parent="1" style="rounded=1;arcSize=3;whiteSpace=wrap;html=0;verticalAlign=top;align=left;spacingTop=10;spacingLeft=15;fillColor=#EDF2FF;strokeColor=#96B5DF;dashed=1;fontColor=#326CB6;fontSize=15;fontStyle=1;" value="PLATFORM SUBSCRIPTION · HUB VNET" vertex="1">
+          <mxGeometry height="555" width="710" x="30" y="545" as="geometry" />
+        </mxCell>
+        <mxCell id="apim" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#25284F;strokeColor=none;fontColor=#FFFFFF;fontSize=14;align=left;spacingLeft=20;" value="&lt;b style=&#39;font-size:21px&#39;&gt;Azure API Management&lt;/b&gt;  (existing Premium instance, external VNet mode)&lt;br&gt;Accepts Front Door only: NSG allows AzureFrontDoor.Backend, policy checks X-Azure-FDID&lt;br&gt;/api/messages → Teams bot: validate-jwt on the Bot Service token, body and header passed through&lt;br&gt;/agents* → Foundry: validate the user token, run OBO&lt;br&gt;Logs and metrics → Application Insights" vertex="1">
+          <mxGeometry height="170" width="665" x="50" y="585" as="geometry" />
+        </mxCell>
+        <mxCell id="bot" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BDD1EC;fontColor=#1C293D;fontSize=13;" value="&lt;b style=&#39;font-size:16px&#39;&gt;Teams bot&lt;/b&gt;&lt;br&gt;Container Apps, internal environment&lt;br&gt;Microsoft 365 Agents SDK&lt;br&gt;&lt;b&gt;No public ingress&lt;/b&gt;&lt;br&gt;Validates the Bot Service token&lt;br&gt;Teams SSO → user token&lt;br&gt;Managed identity, no secret" vertex="1">
+          <mxGeometry height="165" width="215" x="50" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="firewall" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFF5E1;strokeColor=#F0DDB2;fontColor=#1C293D;fontSize=13;" value="&lt;b style=&#39;font-size:15px&#39;&gt;Outbound HTTPS&lt;/b&gt;&lt;br&gt;Your existing hub egress. Allow:&lt;br&gt;Bot Service (replies, SSO), Entra ID" vertex="1">
+          <mxGeometry height="75" width="215" x="50" y="1005" as="geometry" />
+        </mxCell>
+        <mxCell id="token-context" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacing=0;fontSize=14;fontColor=#536176;" value="&lt;b&gt;&lt;font color=&#39;#6944CA&#39;&gt;PLATFORM&lt;/font&gt;&lt;/b&gt;  APIM managed identity&lt;br&gt;    → Foundry (Foundry User role)&lt;br&gt;&lt;b&gt;&lt;font color=&#39;#128573&#39;&gt;USER&lt;/font&gt;&lt;/b&gt;  Graph token for this user&lt;br&gt;    and agent, made by APIM (OBO)" vertex="1">
+          <mxGeometry height="110" width="270" x="440" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="peering-note" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacing=0;fontSize=13;fontColor=#326CB6;" value="Hub-spoke peering to each BU VNet.&lt;br&gt;Central private DNS zones linked to the hub." vertex="1">
+          <mxGeometry height="60" width="280" x="440" y="935" as="geometry" />
+        </mxCell>
+        <mxCell id="bu-zone" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=0;verticalAlign=top;align=left;spacingTop=10;spacingLeft=15;fillColor=#F1F8F5;strokeColor=#A3D7CD;dashed=1;fontColor=#147267;fontSize=15;fontStyle=1;" value="HOSTED-AGENT SUBSCRIPTION · ONE RESOURCE GROUP PER BU" vertex="1">
+          <mxGeometry height="255" width="710" x="30" y="1125" as="geometry" />
+        </mxCell>
+        <mxCell id="foundry-pe" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#A3D7CD;fontColor=#147267;fontSize=14;fontStyle=1;" value="FOUNDRY PRIVATE ENDPOINT (BU SUBNET)" vertex="1">
+          <mxGeometry height="38" width="400" x="319" y="1160" as="geometry" />
+        </mxCell>
+        <mxCell id="foundry" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#DADEE8;fontColor=#1C293D;fontSize=14;" value="&lt;b style=&#39;font-size:20px&#39;&gt;Microsoft Foundry hosted agents&lt;/b&gt;&lt;br&gt;Public network access off. One project per BU.&lt;br&gt;Model calls use the agent&#39;s own identity (no API keys).&lt;br&gt;&lt;font color=&#39;#6944CA&#39;&gt;Graph agent: model tools + code guardrails (e.g. mail recipient checks)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="110" width="670" x="50" y="1250" as="geometry" />
+        </mxCell>
+        <mxCell id="trust" parent="1" style="rounded=1;arcSize=6;fillColor=#FFFFFF;strokeColor=#CFC3F1;" value="" vertex="1">
+          <mxGeometry height="500" width="340" x="800" y="545" as="geometry" />
+        </mxCell>
+        <mxCell id="trust-accent" parent="1" style="rounded=1;arcSize=30;fillColor=#6944CA;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="8" width="340" x="800" y="545" as="geometry" />
+        </mxCell>
+        <mxCell id="trust-heading" parent="1" style="text;html=0;align=left;fontSize=17;fontStyle=1;fontColor=#6944CA;" value="THE TRUST EXCHANGE (IN APIM)" vertex="1">
+          <mxGeometry height="25" width="300" x="825" y="565" as="geometry" />
+        </mxCell>
+        <mxCell id="trust-content" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacing=0;fontSize=13;fontColor=#536176;" value="Microsoft Entra Agent ID, on-behalf-of (OBO)&lt;br&gt;&lt;br&gt;&lt;b style=&#39;color:#1C293D;font-size:15px&#39;&gt;1  User signs in&lt;/b&gt;&lt;br&gt;Teams SSO or Cowork SSO returns a token&lt;br&gt;aud = agent blueprint, scp = agent.invoke&lt;br&gt;&lt;br&gt;&lt;b style=&#39;color:#1C293D;font-size:15px&#39;&gt;2  APIM validates it&lt;/b&gt;&lt;br&gt;Issuer = your tenant, audience = blueprint.&lt;br&gt;scp present → call made by a user&lt;br&gt;&lt;br&gt;&lt;b style=&#39;color:#1C293D;font-size:15px&#39;&gt;3  Blueprint exchange&lt;/b&gt;&lt;br&gt;APIM&#39;s managed identity is the blueprint&#39;s&lt;br&gt;only credential. It gets a token for the&lt;br&gt;agent&#39;s own identity (fmi_path).&lt;br&gt;&lt;br&gt;&lt;b style=&#39;color:#1C293D;font-size:15px&#39;&gt;4  OBO to Graph&lt;/b&gt;&lt;br&gt;Agent identity + user token → Graph token&lt;br&gt;user = caller, app = agent identity&lt;br&gt;scp = User.Read Calendars.Read Mail.Send&lt;br&gt;Cached 45 min per user and agent&lt;br&gt;&lt;br&gt;&lt;b style=&#39;color:#1C293D;font-size:15px&#39;&gt;5  Agent calls Graph as the user&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;&lt;font color=&#39;#6944CA&#39;&gt;Access = the user&#39;s own rights, limited&lt;br&gt;to the scopes consented on the blueprint.&lt;br&gt;No client secrets.&lt;/font&gt;&lt;/b&gt;" vertex="1">
+          <mxGeometry height="495" width="295" x="825" y="598" as="geometry" />
+        </mxCell>
+        <mxCell id="receives" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#F0EBFF;strokeColor=#D8CDF3;fontColor=#536176;fontSize=13;align=left;spacingLeft=12;" value="&lt;b style=&#39;font-size:16px;color:#1C293D&#39;&gt;What the agent receives&lt;/b&gt;&lt;br&gt;Authorization: APIM&#39;s managed identity&lt;br&gt;x-client-user-assertion: the user&#39;s token&lt;br&gt;x-client-graph-token: Graph token (OBO)&lt;br&gt;&lt;b&gt;OBO runs in APIM. It can&#39;t run inside&lt;br&gt;the hosted-agent sandbox.&lt;/b&gt;" vertex="1">
+          <mxGeometry height="145" width="340" x="800" y="1215" as="geometry" />
+        </mxCell>
+        <mxCell id="actions-heading" parent="1" style="text;html=0;align=left;fontSize=16;fontStyle=1;fontColor=#536176;" value="MICROSOFT 365 ACTIONS" vertex="1">
+          <mxGeometry height="25" width="340" x="50" y="1400" as="geometry" />
+        </mxCell>
+        <mxCell id="graph" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=left;spacingLeft=25;fontSize=20;" value="&lt;b&gt;Microsoft Graph&lt;/b&gt;, as the signed-in user: profile and manager, read calendar, send mail" vertex="1">
+          <mxGeometry height="90" width="1090" x="50" y="1435" as="geometry" />
+        </mxCell>
+        <mxCell id="direct-note" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacing=0;fontSize=13;fontColor=#536176;" value="&lt;b style=&#39;color:#1C293D&#39;&gt;How Teams reaches a private bot.&lt;/b&gt; Teams talks to Azure Bot Service, which is Microsoft-hosted and outside your VNets. Its public network access must stay on for Teams. Bot Service calls the messaging endpoint https://&amp;lt;front-door&amp;gt;/api/messages. Front Door forwards to APIM, and APIM forwards to the bot over the VNet. Front Door is the only public entry for every channel. Front Door only carries inbound requests. The bot sends each reply as a new outbound HTTPS call to Bot Service, and it fetches SSO tokens the same way. Those calls leave through your existing egress (allow service tag AzureBotService and Entra ID). Front Door can&#39;t carry them.&lt;br&gt;&lt;b style=&#39;color:#1C293D&#39;&gt;APIM.&lt;/b&gt; Your existing Premium instance in external VNet mode, with no new APIM needed. Front Door reaches its gateway, and the NSG and X-Azure-FDID check limit that gateway to Front Door. Private Link from Front Door isn&#39;t available for VNet-injected classic tiers. APIM needs outbound access to Entra ID for the OBO exchange and reaches Foundry over hub-spoke peering through each BU&#39;s existing private endpoint. Bot Service authenticity is checked by validate-jwt in APIM and again in the bot." vertex="1">
+          <mxGeometry height="110" width="1090" x="50" y="1545" as="geometry" />
+        </mxCell>
+        <mxCell id="footer" parent="1" style="text;html=0;align=left;fontSize=20;fontStyle=1;fontColor=#1C293D;" value="Federated identity" vertex="1">
+          <mxGeometry height="35" width="300" x="50" y="1690" as="geometry" />
+        </mxCell>
+        <mxCell id="footer2" parent="1" style="text;html=0;align=left;fontSize=20;fontStyle=1;fontColor=#1C293D;" value="Delegated permissions" vertex="1">
+          <mxGeometry height="35" width="300" x="440" y="1690" as="geometry" />
+        </mxCell>
+        <mxCell id="footer3" parent="1" style="text;html=0;align=left;fontSize=20;fontStyle=1;fontColor=#1C293D;" value="Code guardrails" vertex="1">
+          <mxGeometry height="35" width="290" x="850" y="1690" as="geometry" />
+        </mxCell>
+        <mxCell id="reply-label" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacing=0;fontSize=12;fontColor=#326CB6;" value="3. Reply: a new outbound call to Bot Service" vertex="1">
+          <mxGeometry height="30" width="250" x="168" y="970" as="geometry" />
+        </mxCell>
+        <mxCell id="teams-to-service" edge="1" parent="1" source="teams" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#397BDC;" target="bot-service" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cowork-to-edge" edge="1" parent="1" source="cowork" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#128573;" target="front-door" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="mcp-to-edge" edge="1" parent="1" source="mcp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#C7922D;" target="front-door" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="service-to-edge" edge="1" parent="1" source="bot-service" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#397BDC;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="front-door" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-to-apim" edge="1" parent="1" source="front-door" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#128573;exitX=0.5;exitY=1;entryX=0.7;entryY=0;fontColor=#536176;fontSize=13;labelBackgroundColor=#F6F7FC;" target="apim" value="All channels, HTTPS">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="apim-to-bot" edge="1" parent="1" source="apim" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#397BDC;exitX=0.16;exitY=1;entryX=0.5;entryY=0;fontColor=#326CB6;fontSize=12;labelBackgroundColor=#EDF2FF;" target="bot" value="1. Activity">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bot-to-apim" edge="1" parent="1" source="bot" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#397BDC;exitX=1;exitY=0.4;entryX=0.42;entryY=1;fontColor=#326CB6;fontSize=12;labelBackgroundColor=#EDF2FF;" target="apim" value="2. /agents + user token">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint y="14" as="offset" />
+            <Array as="points">
+              <mxPoint x="330" y="866" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bot-to-fw" edge="1" parent="1" source="bot" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#397BDC;dashed=1;" target="firewall" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fw-to-service" edge="1" parent="1" source="firewall" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#397BDC;dashed=1;exitX=0;exitY=0.5;entryX=0;entryY=0.7;fontColor=#326CB6;fontSize=12;labelBackgroundColor=#F6F7FC;" target="bot-service" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="19.2" y="1042.5" />
+              <mxPoint x="19.2" y="466" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="apim-to-pe" edge="1" parent="1" source="apim" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#6944CA;exitX=0.97;exitY=1;entryX=0.566;entryY=0.116;entryDx=0;entryDy=0;entryPerimeter=0;" target="foundry-pe" value="">
+          <mxGeometry relative="1" x="0.1936" as="geometry">
+            <Array as="points">
+              <mxPoint x="436.7" y="755" />
+              <mxPoint x="436.7" y="1053.4" />
+              <mxPoint x="541.4" y="1053.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pe-to-foundry" edge="1" parent="1" source="foundry-pe" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#6944CA;exitX=0.5;exitY=1;entryX=0.7;entryY=0;" target="foundry" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="apim-to-trust" edge="1" parent="1" source="apim" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;endArrow=none;dashed=1;strokeWidth=1.5;strokeColor=#6944CA;exitX=1;exitY=0.5;entryX=0;entryY=0.12;" target="trust" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trust-to-entra" edge="1" parent="1" source="trust" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;dashed=1;strokeWidth=1.5;strokeColor=#6944CA;exitX=0.95;exitY=0;entryX=0.95;entryY=1;" target="entra" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="foundry-to-receives" edge="1" parent="1" source="foundry" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;endArrow=none;dashed=1;strokeWidth=1.5;strokeColor=#6944CA;" target="receives" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="foundry-to-graph" edge="1" parent="1" source="foundry" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#6944CA;exitX=0.4;exitY=1;entryX=0.246;entryY=0;fontColor=#536176;fontSize=13;labelBackgroundColor=#F6F7FC;" target="graph" value="Graph calls as the signed-in user">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="110" as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

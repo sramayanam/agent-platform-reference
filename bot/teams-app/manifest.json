@@ -1,0 +1,15 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.17/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.17",
+  "version": "1.0.0",
+  "id": "<bot-app-id>",
+  "developer": { "name": "<your organization>", "websiteUrl": "https://<front-door-host>", "privacyUrl": "https://<front-door-host>", "termsOfUseUrl": "https://<front-door-host>" },
+  "name": { "short": "Agents", "full": "Hosted agents platform" },
+  "description": { "short": "Chat with the platform's hosted agents.", "full": "Routes your messages through APIM to Foundry hosted agents using your own identity (SSO)." },
+  "icons": { "color": "color.png", "outline": "outline.png" },
+  "accentColor": "#3A5BA0",
+  "bots": [ { "botId": "<bot-app-id>", "scopes": ["personal"], "supportsFiles": false, "isNotificationOnly": false } ],
+  "permissions": ["identity"],
+  "validDomains": ["token.botframework.com", "<front-door-host>"],
+  "webApplicationInfo": { "id": "<bot-app-id>", "resource": "api://botid-<bot-app-id>" }
+}

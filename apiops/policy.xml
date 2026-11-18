@@ -1,0 +1,26 @@
+<!--
+  Global policy (all APIs): accept public traffic only from this deployment's Front Door profile.
+  The NSG on the APIM subnet already limits public inbound 443 to the AzureFrontDoor.Backend service tag.
+  That tag is shared by every Front Door customer, so the gateway also checks X-Azure-FDID (your profile's ID).
+  Calls from inside the VNet (the Teams bot calling /agents) arrive from a private address and skip the check.
+  Named value: front-door-id
+-->
+<policies>
+  <inbound>
+    <choose>
+      <when condition='@{
+          var ip = context.Request.IpAddress ?? "";
+          var isPrivate = ip.StartsWith("10.") || ip.StartsWith("192.168.")
+                          || System.Text.RegularExpressions.Regex.IsMatch(ip, "^172\\.(1[6-9]|2[0-9]|3[01])\\.");
+          return !isPrivate &amp;&amp; context.Request.Headers.GetValueOrDefault("X-Azure-FDID", "") != "{{front-door-id}}";
+        }'>
+        <return-response>
+          <set-status code="403" reason="Forbidden" />
+        </return-response>
+      </when>
+    </choose>
+  </inbound>
+  <backend><forward-request /></backend>
+  <outbound />
+  <on-error />
+</policies>

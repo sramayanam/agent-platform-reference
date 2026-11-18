@@ -1,0 +1,40 @@
+<!--
+  agents-mcp: MCP server (streamable HTTP) for Copilot Cowork and other MCP clients. Tools come from agents-tools operations.
+  Inbound: Entra token issued for the blueprint (identifier URI = this MCP URL). On 401, point the client
+  to the protected resource metadata (RFC 9728) so it can discover Entra as the authorization server.
+  Do not read context.Response.Body here: it breaks MCP streaming.
+-->
+<policies>
+  <inbound>
+    <base />
+    <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized">
+      <openid-config url="https://login.microsoftonline.com/{{tenant-id}}/v2.0/.well-known/openid-configuration" />
+      <audiences>
+        <audience>{{blueprint-client-id}}</audience>
+        <audience>{{mcp-resource}}</audience>
+      </audiences>
+      <issuers>
+        <issuer>https://login.microsoftonline.com/{{tenant-id}}/v2.0</issuer>
+        <issuer>https://sts.windows.net/{{tenant-id}}/</issuer>
+      </issuers>
+      <required-claims>
+        <claim name="scp" match="any" separator=" "><value>agent.invoke</value></claim>
+      </required-claims>
+    </validate-jwt>
+  </inbound>
+  <backend><base /></backend>
+  <outbound><base /></outbound>
+  <on-error>
+    <base />
+    <choose>
+      <when condition="@(context.Response.StatusCode == 401)">
+        <return-response>
+          <set-status code="401" reason="Unauthorized" />
+          <set-header name="WWW-Authenticate" exists-action="override">
+            <value>Bearer error="invalid_token", resource_metadata="{{apim-gateway-url}}/.well-known/oauth-protected-resource/agents-mcp/mcp"</value>
+          </set-header>
+        </return-response>
+      </when>
+    </choose>
+  </on-error>
+</policies>

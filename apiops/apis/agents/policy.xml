@@ -1,0 +1,62 @@
+<!--
+  agents API: shared entry point for all hosted agents.
+  1. validate-jwt: caller token must be issued for the agent blueprint (v1 or v2 token).
+  2. If the caller token is delegated (has scp), it is forwarded to the agent as header x-client-user-assertion,
+     and the agent-obo fragment adds x-client-graph-token (Graph token for this user, as the agent's identity).
+     Foundry forwards only x-client-* headers to the agent container.
+  3. APIM always authenticates to Foundry with its own managed identity (aud https://ai.azure.com);
+     Foundry does not accept API keys.
+  4. /agents/{agentName}/{rest} -> {project}/agents/{agentName}/endpoint/protocols/{rest}
+-->
+<policies>
+  <inbound>
+    <base />
+    <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized" output-token-variable-name="caller">
+      <openid-config url="https://login.microsoftonline.com/{{tenant-id}}/v2.0/.well-known/openid-configuration" />
+      <audiences>
+        <audience>api://{{blueprint-client-id}}</audience>
+        <audience>{{blueprint-client-id}}</audience>
+      </audiences>
+      <issuers>
+        <issuer>https://sts.windows.net/{{tenant-id}}/</issuer>
+        <issuer>https://login.microsoftonline.com/{{tenant-id}}/v2.0</issuer>
+      </issuers>
+    </validate-jwt>
+    <set-variable name="callerOid" value="@(((Jwt)context.Variables["caller"]).Claims.GetValueOrDefault("oid", "unknown"))" />
+    <set-variable name="isDelegated" value="@(((Jwt)context.Variables["caller"]).Claims.ContainsKey("scp"))" />
+    <choose>
+      <when condition="@((bool)context.Variables["isDelegated"])">
+        <!-- OBO pattern: hand the user's token to the agent; never to Foundry's Authorization header. -->
+        <set-header name="x-client-user-assertion" exists-action="override">
+          <value>@(context.Request.Headers.GetValueOrDefault("Authorization", "").Replace("Bearer ", ""))</value>
+        </set-header>
+      </when>
+      <otherwise>
+        <set-header name="x-client-user-assertion" exists-action="delete" />
+      </otherwise>
+    </choose>
+    <set-variable name="agentName" value="@(context.Request.MatchedParameters.GetValueOrDefault(&quot;agentName&quot;, &quot;&quot;))" />
+    <include-fragment fragment-id="agent-obo" />
+    <authentication-managed-identity resource="https://ai.azure.com" />
+    <set-header name="x-agent-route" exists-action="override">
+      <value>@(context.Request.MatchedParameters.GetValueOrDefault("agentName", "none"))</value>
+    </set-header>
+    <emit-metric name="agent-requests" namespace="agents-platform" value="1">
+      <dimension name="agent" value="@(context.Request.MatchedParameters.GetValueOrDefault("agentName", "none"))" />
+      <dimension name="callerOid" value="@((string)context.Variables["callerOid"])" />
+      <dimension name="authPattern" value="@((bool)context.Variables["isDelegated"] ? "obo" : "service-principal")" />
+    </emit-metric>
+  </inbound>
+  <backend>
+    <base />
+  </backend>
+  <outbound>
+    <base />
+    <set-header name="x-agent-route" exists-action="override">
+      <value>@(context.Request.MatchedParameters.GetValueOrDefault("agentName", "none"))</value>
+    </set-header>
+  </outbound>
+  <on-error>
+    <base />
+  </on-error>
+</policies>

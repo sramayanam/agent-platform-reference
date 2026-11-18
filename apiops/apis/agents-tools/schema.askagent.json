@@ -1,0 +1,4 @@
+{"properties":{"contentType":"application/vnd.oai.openapi.components+json","document":{"components":{"schemas":{
+ "AskAgentRequest":{"type":"object","required":["input"],"properties":{
+   "agent":{"type":"string","description":"Hosted agent name, e.g. graph-profile-agent","default":"graph-profile-agent","pattern":"^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$"},
+   "input":{"type":"string","description":"The message to send to the agent"}}}}}}}}

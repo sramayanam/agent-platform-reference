@@ -1,0 +1,32 @@
+<!--
+  bot-messages: Teams messaging endpoint. Azure Bot messaging endpoint = https://<front-door-host>/api/messages
+  Bot Service (Microsoft-hosted, public) -> Front Door -> this API -> Teams bot on an internal Container Apps environment.
+  1. validate-jwt: the request must carry a token issued by Bot Service for this bot (aud = bot app ID).
+     The token is checked here and again by the bot (Microsoft 365 Agents SDK). Nothing is rewritten.
+  2. Request body and Authorization header are passed through unchanged.
+  The bot's replies do not come back through here: the bot posts each reply as a new outbound call to Bot Service.
+  API settings: path "api", operation POST /messages, subscription not required, backend = bot-internal-url.
+  Named values: bot-app-id, bot-internal-url (https://<bot>.internal.<env-domain>), tenant-id
+-->
+<policies>
+  <inbound>
+    <base />
+    <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized">
+      <openid-config url="https://login.botframework.com/v1/.well-known/openidconfiguration" />
+      <openid-config url="https://login.microsoftonline.com/{{tenant-id}}/v2.0/.well-known/openid-configuration" />
+      <audiences>
+        <audience>{{bot-app-id}}</audience>
+      </audiences>
+      <issuers>
+        <issuer>https://api.botframework.com</issuer>
+        <issuer>https://sts.windows.net/{{tenant-id}}/</issuer>
+        <issuer>https://login.microsoftonline.com/{{tenant-id}}/v2.0</issuer>
+      </issuers>
+    </validate-jwt>
+    <set-backend-service base-url="{{bot-internal-url}}" />
+    <rewrite-uri template="/api/messages" copy-unmatched-params="true" />
+  </inbound>
+  <backend><base /></backend>
+  <outbound><base /></outbound>
+  <on-error><base /></on-error>
+</policies>

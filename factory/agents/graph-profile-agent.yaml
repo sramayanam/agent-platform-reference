@@ -1,0 +1,13 @@
+name: graph-profile-agent
+businessUnit: bu-platform
+authPattern: obo            # reads Graph and sends mail as the signed-in user (OBO runs in APIM)
+foundryProject: <foundry-project-name>
+source: agents/graph-profile-agent
+cpu: "0.5"
+memory: 1Gi
+env:
+  MAIL_ALLOW_EXTERNAL: "false"   # true allows mail to addresses outside the sender's domain
+  MODEL_ENDPOINT: https://<foundry-account>.services.ai.azure.com/openai/v1   # Entra auth as the agent identity (no API key)
+  MODEL_DEPLOYMENT: <model-deployment-name>
+toolScopes: ["https://graph.microsoft.com/User.Read", "https://graph.microsoft.com/Calendars.Read", "https://graph.microsoft.com/Mail.Send"]
+owners: ["<owner@your-domain>"]

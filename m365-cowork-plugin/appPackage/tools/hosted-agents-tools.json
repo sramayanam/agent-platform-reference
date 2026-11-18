@@ -1,0 +1,16 @@
+{
+  "tools": [
+    {
+      "name": "ask_agent",
+      "description": "Send a message to a hosted agent on the platform and return its reply. Use agent='graph-profile-agent' for the signed-in user's profile ('me'), manager ('manager') or calendar ('calendar'), or to send email as the user.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "agent": { "type": "string", "description": "Hosted agent name, e.g. graph-profile-agent", "default": "graph-profile-agent", "pattern": "^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$" },
+          "input": { "type": "string", "description": "The message to send to the agent" }
+        },
+        "required": ["input"]
+      }
+    }
+  ]
+}

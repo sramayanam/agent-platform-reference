@@ -1,0 +1,23 @@
+// == agents-traffic: requests per agent and status (APIM gateway logs)
+ApiManagementGatewayLogs
+| where ApiId in ("agents", "agents-tools", "agents-mcp")
+| extend agent = coalesce(extract(@"/agents/([a-z0-9-]+)/", 1, Url), extract(@"/agents/([a-z0-9-]+)/endpoint", 1, BackendUrl), "-")
+| summarize requests = count(), p95_ms = percentile(TotalTime, 95), errors = countif(ResponseCode >= 400) by ApiId, agent, ResponseCode, bin(TimeGenerated, 1h)
+| order by TimeGenerated desc
+
+// == agents-callers: who called which agent, and how (emit-metric agent-requests)
+AppMetrics
+| where Name == "agent-requests"
+| extend agent = tostring(Properties.agent), callerOid = tostring(Properties.callerOid), authPattern = tostring(Properties.authPattern)
+| summarize calls = sum(Sum) by agent, callerOid, authPattern, bin(TimeGenerated, 1h)
+| order by TimeGenerated desc
+
+// == agents-auth-failures: 401/403 by API and caller IP
+ApiManagementGatewayLogs
+| where ApiId in ("agents", "agents-tools", "agents-mcp") and ResponseCode in (401, 403)
+| summarize failures = count() by ApiId, ResponseCode, CallerIpAddress, LastErrorReason, bin(TimeGenerated, 15m)
+| order by TimeGenerated desc
+
+// == agents-tokens: model token usage (populates once model routes use the LLM token-metric policies)
+ApiManagementGatewayLlmLogs
+| summarize prompt = sum(PromptTokens), completion = sum(CompletionTokens), total = sum(TotalTokens) by DeploymentName, bin(TimeGenerated, 1h)

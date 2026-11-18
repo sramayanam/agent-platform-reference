@@ -1,0 +1,73 @@
+<!--
+  agent-obo: on-behalf-of exchange at the gateway. No secrets.
+  Include after validate-jwt (output variable "caller") and after setting variable "agentName",
+  before the Authorization header is replaced:   <include-fragment fragment-id="agent-obo" />
+
+  1. Managed identity token of the blueprint's credential (user-assigned identity attached to APIM),
+     audience api://AzureADTokenExchange.
+  2. T1: client_credentials as the blueprint, fmi_path = the agent's own identity (child of the blueprint).
+  3. OBO: client_id = agent identity, client_assertion = T1, assertion = the caller's user token
+     -> Microsoft Graph token for this user, issued to the agent identity.
+  4. Cached per user + agent for 45 minutes; forwarded to the agent as x-client-graph-token.
+
+  Named values: tenant-id, blueprint-client-id, blueprint-uami-client-id,
+                agent-child-ids  ("agentName=agentIdentityAppId;agentName=agentIdentityAppId")
+  Hosted agents can't run this exchange inside the Foundry sandbox (AADSTS700231), so the gateway runs it.
+-->
+<fragment>
+  <set-variable name="childId" value="@{
+      var name = (string)context.Variables.GetValueOrDefault(&quot;agentName&quot;, &quot;&quot;);
+      foreach (var pair in &quot;{{agent-child-ids}}&quot;.Split(';')) {
+        var kv = pair.Split('=');
+        if (kv.Length == 2 &amp;&amp; kv[0].Trim() == name) { return kv[1].Trim(); }
+      }
+      return &quot;&quot;;
+    }" />
+  <set-variable name="oboKey" value="@(&quot;obo-&quot; + (string)context.Variables[&quot;childId&quot;] + &quot;-&quot; + ((Jwt)context.Variables[&quot;caller&quot;]).Claims.GetValueOrDefault(&quot;oid&quot;, &quot;&quot;))" />
+  <choose>
+    <when condition="@(((string)context.Variables[&quot;childId&quot;]) != &quot;&quot; &amp;&amp; ((Jwt)context.Variables[&quot;caller&quot;]).Claims.ContainsKey(&quot;scp&quot;))">
+      <!-- Debug only: a traced request (Apim-Debug-Authorization) with x-obo-nocache: 1 skips the cache so the
+           full exchange shows in the trace (scripts/trace-obo.sh). Ignored for normal traffic. -->
+      <choose>
+        <when condition="@(context.Tracing &amp;&amp; context.Request.Headers.GetValueOrDefault(&quot;x-obo-nocache&quot;, &quot;&quot;) == &quot;1&quot;)">
+          <cache-remove-value key="@((string)context.Variables[&quot;oboKey&quot;])" />
+        </when>
+      </choose>
+      <cache-lookup-value key="@((string)context.Variables[&quot;oboKey&quot;])" variable-name="graphToken" />
+      <choose>
+        <when condition="@(!context.Variables.ContainsKey(&quot;graphToken&quot;))">
+          <authentication-managed-identity resource="api://AzureADTokenExchange" client-id="{{blueprint-uami-client-id}}" output-token-variable-name="miToken" />
+          <send-request mode="new" response-variable-name="t1" timeout="20" ignore-error="false">
+            <set-url>https://login.microsoftonline.com/{{tenant-id}}/oauth2/v2.0/token</set-url>
+            <set-method>POST</set-method>
+            <set-header name="Content-Type" exists-action="override"><value>application/x-www-form-urlencoded</value></set-header>
+            <set-body>@("client_id={{blueprint-client-id}}&amp;scope=api%3A%2F%2FAzureADTokenExchange%2F.default&amp;grant_type=client_credentials&amp;client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-bearer&amp;client_assertion=" + (string)context.Variables["miToken"] + "&amp;fmi_path=" + (string)context.Variables["childId"])</set-body>
+          </send-request>
+          <send-request mode="new" response-variable-name="obo" timeout="20" ignore-error="false">
+            <set-url>https://login.microsoftonline.com/{{tenant-id}}/oauth2/v2.0/token</set-url>
+            <set-method>POST</set-method>
+            <set-header name="Content-Type" exists-action="override"><value>application/x-www-form-urlencoded</value></set-header>
+            <set-body>@("client_id=" + (string)context.Variables["childId"] + "&amp;scope=https%3A%2F%2Fgraph.microsoft.com%2F.default&amp;grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&amp;requested_token_use=on_behalf_of&amp;client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-bearer&amp;client_assertion=" + (string)((IResponse)context.Variables["t1"]).Body.As&lt;JObject&gt;()["access_token"] + "&amp;assertion=" + context.Request.Headers.GetValueOrDefault("Authorization", "").Replace("Bearer ", ""))</set-body>
+          </send-request>
+          <set-variable name="oboJson" value="@(((IResponse)context.Variables[&quot;obo&quot;]).Body.As&lt;JObject&gt;())" />
+          <choose>
+            <when condition="@(((JObject)context.Variables[&quot;oboJson&quot;])[&quot;access_token&quot;] != null)">
+              <set-variable name="graphToken" value="@((string)((JObject)context.Variables[&quot;oboJson&quot;])[&quot;access_token&quot;])" />
+              <cache-store-value key="@((string)context.Variables[&quot;oboKey&quot;])" value="@((string)context.Variables[&quot;graphToken&quot;])" duration="2700" />
+            </when>
+            <otherwise>
+              <trace source="agent-obo" severity="error">
+                <message>@(&quot;OBO failed: &quot; + (string)((JObject)context.Variables[&quot;oboJson&quot;])[&quot;error&quot;] + &quot; &quot; + ((string)((JObject)context.Variables[&quot;oboJson&quot;])[&quot;error_description&quot;] ?? &quot;&quot;).Split('\n')[0])</message>
+              </trace>
+            </otherwise>
+          </choose>
+        </when>
+      </choose>
+      <choose>
+        <when condition="@(context.Variables.ContainsKey(&quot;graphToken&quot;))">
+          <set-header name="x-client-graph-token" exists-action="override"><value>@((string)context.Variables["graphToken"])</value></set-header>
+        </when>
+      </choose>
+    </when>
+  </choose>
+</fragment>
