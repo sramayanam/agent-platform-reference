@@ -1,5 +1,11 @@
 # Agent platform reference: Teams and Copilot Cowork to Foundry hosted agents, as the signed-in user
 
+> **Not production-grade. Use at your own risk.** This repository is a reference
+> sample for learning and evaluation, not a production-ready solution. It is
+> provided "AS IS", without warranty, under the [MIT License](LICENSE).
+> You are responsible for independent security review, testing, hardening, and
+> operational readiness before any production use.
+
 Reference implementation for a secured, multi-channel agent platform:
 
 - **One public entry.** Azure Front Door Premium + WAF in front of everything, including Teams (Bot Service messaging endpoint).
